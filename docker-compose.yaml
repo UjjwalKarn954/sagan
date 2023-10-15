@@ -1,0 +1,25 @@
+version: '3'
+services:
+  sagan-renderer:
+    build:
+      context: ./sagan-renderer  # Directory containing the second Dockerfile
+      dockerfile: Dockerfile  # Name of your Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: cloud,production
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: "{enabled: false}"
+      JBP_CONFIG_OPEN_JDK_JRE: "{jre: {version: 11.+}}"
+    depends_on:
+      - sagan-site  # Wait for sagan-site to start before starting sagan-renderer
+    ports:
+      - "8081:8081"  # Adjust the port if needed
+
+  sagan-site:
+    build:
+      context: .  # Directory containing the first Dockerfile
+      dockerfile: Dockerfile  # Name of your Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: cloud,standalone
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: "{enabled: false}"
+      JBP_CONFIG_OPEN_JDK_JRE: "{jre: {version: 11.+}}"
+    ports:
+      - "8080:8080"  # Adjust the port if needed

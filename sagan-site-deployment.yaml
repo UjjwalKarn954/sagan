@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml
+    kompose.version: 1.31.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sagan-site
+  name: sagan-site
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: sagan-site
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yaml
+        kompose.version: 1.31.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/sagan-default: "true"
+        io.kompose.service: sagan-site
+    spec:
+      containers:
+        - env:
+            - name: JBP_CONFIG_OPEN_JDK_JRE
+              value: '{jre: {version: 11.+}}'
+            - name: JBP_CONFIG_SPRING_AUTO_RECONFIGURATION
+              value: '{enabled: false}'
+            - name: SPRING_PROFILES_ACTIVE
+              value: cloud,standalone
+          image: sagan-site
+          name: sagan-site
+          ports:
+            - containerPort: 8080
+              hostPort: 8080
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}
